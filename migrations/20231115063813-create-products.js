@@ -18,6 +18,10 @@ module.exports = {
         },
         onDelete: 'CASCADE', // 만약 Users 모델의 userId가 삭제되면, Products 모델의 데이터가 삭제됩니다.
       },
+      name: {
+        allowNull: false, // NOT NULL
+        type: Sequelize.STRING,
+      },
       title: {
         allowNull: false, // NOT NULL
         type: Sequelize.STRING,

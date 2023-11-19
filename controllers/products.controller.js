@@ -1,12 +1,14 @@
-const { Products } = require('../models');
+const { Products, Users } = require('../models');
 const url = require('url');
 // 상품 등록
 exports.createProduct = async (req, res) => {
   const { userId } = res.locals.user;
   const { title, content } = req.body;
+  const joinUser = await Users.findOne({ where: { userId } });
 
   const product = await Products.create({
     userId: userId,
+    name: joinUser.name,
     title,
     content,
   });
@@ -19,13 +21,16 @@ exports.readAllProducts = async (req, res) => {
   let getUrl = req.url;
   let queryData = url.parse(getUrl, true).query;
   let sortingWord = 'DESC';
-  if (queryData.sort === 'ASC') {
-    sortingWord = 'ASC';
-  } else if (queryData.sort === 'DESC') {
-    sortingWord = 'DESC';
+  if (queryData.sort) {
+    const sortValue = queryData.sort.toLowerCase();
+    if (sortValue === 'asc') {
+      sortingWord = 'ASC';
+    } else if (sortValue === 'desc') {
+      sortingWord = 'DESC';
+    }
   }
   const products = await Products.findAll({
-    attributes: ['productId', 'title', 'content', 'status', 'createdAt', 'updatedAt'],
+    attributes: ['productId', 'title', 'name', 'content', 'status', 'createdAt', 'updatedAt'],
     order: [['createdAt', sortingWord]],
   });
 
@@ -36,7 +41,7 @@ exports.readAllProducts = async (req, res) => {
 exports.readDetailProduct = async (req, res) => {
   const { productId } = req.params;
   const product = await Products.findOne({
-    attributes: ['productId', 'title', 'content', 'status', 'createdAt', 'updatedAt'],
+    attributes: ['productId', 'title', 'name', 'content', 'status', 'createdAt', 'updatedAt'],
     where: { productId },
   });
 
