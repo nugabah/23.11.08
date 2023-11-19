@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { Users } = require('../models');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -24,7 +25,8 @@ exports.signUp = async (req, res) => {
     return res.status(409).json({ message: '확인 비밀번호와 다릅니다.' });
   }
   try {
-    const user = await Users.create({ email, password, name });
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+    const user = await Users.create({ email, password: hashedPassword, name });
     const userWithoutPassword = {
       userId: user.userId,
       email: user.email,
@@ -41,9 +43,10 @@ exports.signUp = async (req, res) => {
 exports.logIn = async (req, res) => {
   const { email, password } = req.body;
   const user = await Users.findOne({ where: { email } });
+  const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
   if (!user) {
     return res.status(401).json({ message: '존재하지 않는 이메일입니다.' });
-  } else if (user.password !== password) {
+  } else if (user.password !== hashedPassword) {
     return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
   }
 
