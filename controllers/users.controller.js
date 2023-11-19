@@ -44,6 +44,9 @@ exports.logIn = async (req, res) => {
   const { email, password } = req.body;
   const user = await Users.findOne({ where: { email } });
   const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+  if (!Object.keys(req.body).length) {
+    return res.status(409).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
+  }
   if (!user) {
     return res.status(401).json({ message: '존재하지 않는 이메일입니다.' });
   } else if (user.password !== hashedPassword) {

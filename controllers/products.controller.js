@@ -64,7 +64,9 @@ exports.updateProduct = async (req, res) => {
   const { title, content, status } = req.body;
 
   const product = await Products.findOne({ where: { productId } });
-
+  if (!Object.keys(req.body).length) {
+    return res.status(409).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' });
+  }
   if (!product) {
     return res.status(404).json({ message: '상품 조회에 실패하였습니다.' });
   } else if (product.userId !== userId) {
