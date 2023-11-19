@@ -3,6 +3,7 @@ const { Users } = require('../models');
 const dotenv = require('dotenv');
 dotenv.config();
 const secretKey = process.env.CUSTOMIZE_SECRET_KEY;
+
 exports.signUp = async (req, res) => {
   const { email, password, passwordCheck, name } = req.body;
   const isExistUser = await Users.findOne({ where: { email } });
