@@ -16,7 +16,7 @@ exports.createProduct = async (req, res) => {
       title,
       content,
     });
-    return res.status(201).json({ data: '게시글이 등록되었습니다.' });
+    return res.status(201).json({ Message: '게시글이 등록되었습니다.' });
   } catch (err) {
     res.status(400).json({ errorMessage: '에러가 발생했습니다.' });
   }
@@ -49,11 +49,14 @@ exports.readAllProducts = async (req, res) => {
 //상품 상세 조회
 exports.readDetailProduct = async (req, res) => {
   const { productId } = req.params;
+
   const product = await Products.findOne({
     attributes: ['productId', 'title', 'name', 'content', 'status', 'createdAt', 'updatedAt'],
     where: { productId },
   });
-
+  if (!product) {
+    return res.status(404).json({ message: '상품 조회에 실패하였습니다.' });
+  }
   return res.status(200).json({ data: product });
 };
 
@@ -83,7 +86,7 @@ exports.updateProduct = async (req, res) => {
       },
     );
 
-    return res.status(200).json({ data: '게시글이 수정되었습니다.' });
+    return res.status(201).json({ data: '게시글이 수정되었습니다.' });
   } catch (err) {
     res.status(400).json({ errorMessage: '에러가 발생했습니다.' });
   }
